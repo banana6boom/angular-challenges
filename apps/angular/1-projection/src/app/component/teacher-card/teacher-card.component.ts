@@ -1,40 +1,60 @@
-import { Component, OnInit } from '@angular/core';
-import { FakeHttpService } from '../../data-access/fake-http.service';
-import { TeacherStore } from '../../data-access/teacher.store';
-import { CardType } from '../../model/card.model';
-import { Teacher } from '../../model/teacher.model';
-import { CardComponent } from '../../ui/card/card.component';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  OnInit,
+} from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { FakeHttpService, randTeacher, TeacherStore } from '@data-access';
+import { CardComponent, CardDirective, ListItemComponent } from '@ui';
 
 @Component({
   selector: 'app-teacher-card',
   template: `
     <app-card
-      [list]="teachers"
-      [type]="cardType"
-      customClass="bg-light-red"></app-card>
+      class="bg-light-red"
+      [items]="teachers$$()"
+      (addEvent)="addEvent()">
+      <img src="assets/img/teacher.png" width="200px" />
+
+      <ng-template [cardData]="teachers$$()" let-teacher>
+        <app-list-item (deleteEvent)="deleteEvent(teacher.id)">
+          {{ teacher.firstName }}
+        </app-list-item>
+      </ng-template>
+    </app-card>
   `,
   styles: [
     `
-      ::ng-deep .bg-light-red {
+      .bg-light-red {
         background-color: rgba(250, 0, 0, 0.1);
       }
     `,
   ],
   standalone: true,
-  imports: [CardComponent],
+  imports: [CardComponent, ListItemComponent, CardDirective],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TeacherCardComponent implements OnInit {
-  teachers: Teacher[] = [];
-  cardType = CardType.TEACHER;
+  readonly teachers$$ = toSignal(this.store.teachers$, { initialValue: [] });
 
   constructor(
     private http: FakeHttpService,
     private store: TeacherStore,
+    private destroyRef: DestroyRef,
   ) {}
 
   ngOnInit(): void {
-    this.http.fetchTeachers$.subscribe((t) => this.store.addAll(t));
+    this.http.fetchTeachers$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((teachers) => this.store.addAll(teachers));
+  }
 
-    this.store.teachers$.subscribe((t) => (this.teachers = t));
+  addEvent(): void {
+    this.store.addOne(randTeacher());
+  }
+
+  deleteEvent(id: number): void {
+    this.store.deleteOne(id);
   }
 }

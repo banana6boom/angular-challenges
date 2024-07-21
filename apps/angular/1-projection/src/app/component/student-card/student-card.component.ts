@@ -1,40 +1,60 @@
-import { Component, OnInit } from '@angular/core';
-import { FakeHttpService } from '../../data-access/fake-http.service';
-import { StudentStore } from '../../data-access/student.store';
-import { CardType } from '../../model/card.model';
-import { Student } from '../../model/student.model';
-import { CardComponent } from '../../ui/card/card.component';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  OnInit,
+} from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { FakeHttpService, randStudent, StudentStore } from '@data-access';
+import { CardComponent, CardDirective, ListItemComponent } from '@ui';
 
 @Component({
   selector: 'app-student-card',
   template: `
     <app-card
-      [list]="students"
-      [type]="cardType"
-      customClass="bg-light-green"></app-card>
+      class="bg-light-green"
+      [items]="students$$()"
+      (addEvent)="addEvent()">
+      <img src="assets/img/student.webp" width="200px" />
+
+      <ng-template [cardData]="students$$()" let-student>
+        <app-list-item (deleteEvent)="deleteEvent(student.id)">
+          {{ student.firstName }}
+        </app-list-item>
+      </ng-template>
+    </app-card>
   `,
   standalone: true,
   styles: [
     `
-      ::ng-deep .bg-light-green {
+      .bg-light-green {
         background-color: rgba(0, 250, 0, 0.1);
       }
     `,
   ],
-  imports: [CardComponent],
+  imports: [CardComponent, ListItemComponent, CardDirective],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StudentCardComponent implements OnInit {
-  students: Student[] = [];
-  cardType = CardType.STUDENT;
+  readonly students$$ = toSignal(this.store.students$, { initialValue: [] });
 
   constructor(
     private http: FakeHttpService,
     private store: StudentStore,
+    private destroyRef: DestroyRef,
   ) {}
 
   ngOnInit(): void {
-    this.http.fetchStudents$.subscribe((s) => this.store.addAll(s));
+    this.http.fetchStudents$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((students) => this.store.addAll(students));
+  }
 
-    this.store.students$.subscribe((s) => (this.students = s));
+  addEvent(): void {
+    this.store.addOne(randStudent());
+  }
+
+  deleteEvent(id: number): void {
+    this.store.deleteOne(id);
   }
 }

@@ -14,13 +14,20 @@
     }
   ],
   "compilerOptions": {
+    "baseUrl": "./",
     "target": "es2020",
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "paths": {
+      "@data-access": ["./src/app/data-access/index.ts"],
+      "@model": ["./src/app/model/index.ts"],
+      "@ui": ["./src/app/ui"],
+      "@component": ["./src/app/component/index.ts"]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
