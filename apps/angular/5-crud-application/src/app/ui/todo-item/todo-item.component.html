@@ -1,0 +1,28 @@
+<div class="todo">
+  <div class="todo__title">{{ todo().title }}</div>
+
+  <div class="todo__buttons-group">
+    <button
+      class="todo__button todo__button_update"
+      type="button"
+      [disabled]="deleteLoading()"
+      (click)="updateEvent.emit(todo())">
+      @if (loading()) {
+        <mat-spinner class="todo__loader" [diameter]="30" />
+      } @else {
+        Update
+      }
+    </button>
+    <button
+      [disabled]="loading()"
+      class="todo__button todo__button_delete"
+      type="button"
+      (click)="deleteEvent.emit(todo().id)">
+      @if (deleteLoading()) {
+        <mat-spinner class="todo__loader" [diameter]="30" />
+      } @else {
+        Delete
+      }
+    </button>
+  </div>
+</div>

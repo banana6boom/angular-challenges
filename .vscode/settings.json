@@ -1,6 +1,5 @@
 {
-  "eslint.validate": [
-    "json"
-  ],
-  "cSpell.language": "en,es-ES"
+  "eslint.validate": ["json"],
+  "cSpell.language": "en,es-ES",
+  "cSpell.words": ["Todos"]
 }

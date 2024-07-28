@@ -1,0 +1,73 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.todo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid whitesmoke;
+  border-radius: 8px;
+  padding: 1rem;
+  gap: 1rem;
+
+  &__title {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+
+  &__buttons-group {
+    display: flex;
+    align-items: center;
+  }
+
+  &__button {
+    position: relative;
+    border: none;
+    outline: none;
+    padding: 1rem 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in;
+    border-radius: 4px;
+    min-width: 100px;
+    min-height: 50px;
+
+    &[disabled] {
+      cursor: not-allowed;
+      background-color: gray;
+      pointer-events: none;
+    }
+
+    &_update {
+      background-color: rgb(109, 14, 235);
+
+      &:hover {
+        background-color: darken($color: rgb(109, 14, 235), $amount: 10%);
+      }
+    }
+
+    &_delete {
+      background-color: rgba(252, 13, 13, 0.774);
+
+      &:hover {
+        background-color: darken(
+          $color: rgba(252, 13, 13, 0.774),
+          $amount: 10%
+        );
+      }
+    }
+
+    & + & {
+      margin-left: 1rem;
+    }
+  }
+
+  &__loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}

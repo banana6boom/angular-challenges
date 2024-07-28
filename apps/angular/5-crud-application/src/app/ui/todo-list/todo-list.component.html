@@ -1,0 +1,12 @@
+@if (loading$$()) {
+  <mat-spinner [diameter]="50" />
+} @else {
+  @for (todo of todos$$(); track todo.id) {
+    <app-todo-item
+      [todo]="todo"
+      [loading]="todo.id === currentTodo && updateLoading$$()"
+      [deleteLoading]="todo.id === currentTodo && deleteLoading$$()"
+      (updateEvent)="update($event)"
+      (deleteEvent)="delete($event)" />
+  }
+}
