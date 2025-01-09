@@ -24,7 +24,6 @@ import { CardComponent, CardDirective, ListItemComponent } from '@ui';
       </ng-template>
     </app-card>
   `,
-  standalone: true,
   styles: [
     `
       .bg-light-green {
